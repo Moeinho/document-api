@@ -5,7 +5,8 @@ from database import (
     init_db,
     insert_document,
     get_all_documents,
-    get_document_by_id
+    get_document_by_id,
+    delete_document
     )
 
 app = FastAPI()
@@ -42,3 +43,11 @@ def get_document(document_id: int):
     if document is None:
         raise HTTPException(status_code=404, detail="Document not found")
     return document
+
+
+@app.delete("/documents/{document_id}")
+def delete_document_route(document_id: int):
+    is_deleted = delete_document(document_id)
+    if not is_deleted:
+        raise HTTPException(status_code=404, detail="Document not found")
+    return {"message": "Document deleted"}

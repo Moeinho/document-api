@@ -42,7 +42,6 @@ def get_all_documents():
     conn = sqlite3.connect("documents.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM documents")
-    conn.commit()
     documents = cursor.fetchall()
     conn.close()
 
@@ -66,7 +65,6 @@ def get_document_by_id(document_id):
         (document_id,)
         )
 
-    conn.commit()
     row = cursor.fetchone()
     conn.close()
     
@@ -82,3 +80,16 @@ def get_document_by_id(document_id):
         }
     return dict_row
 
+
+def delete_document(document_id):
+    conn = sqlite3.connect("documents.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "DELETE FROM documents WHERE id = ?",
+        (document_id,)
+        )
+    conn.commit()
+    deleted_count = cursor.rowcount
+    conn.close()
+
+    return True if deleted_count > 0 else False
