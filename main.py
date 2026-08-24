@@ -6,18 +6,20 @@ from database import (
     insert_document,
     get_all_documents,
     get_document_by_id,
-    delete_document
-    )
+    delete_document,
+)
 
 app = FastAPI()
 
 init_db()
 
+
 @app.get("/")
 def simple_get():
     return {"message": "hello"}
 
-@app.get("/health") 
+
+@app.get("/health")
 def get_health():
     return {"status": "ok"}
 
@@ -28,8 +30,9 @@ def create_document(document: DocumentCreate):
     return {
         "title": f"{document.title}",
         "content": f"{document.content}",
-        "id": doc_id
-            }
+        "id": doc_id,
+    }
+
 
 @app.get("/documents")
 def list_documents():

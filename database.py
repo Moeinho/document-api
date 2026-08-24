@@ -1,9 +1,11 @@
 import sqlite3
 from datetime import datetime
 
+DB_NAME = "documents.db"
+
 
 def init_db():
-    conn = sqlite3.connect("documents.db")
+    conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS documents (
@@ -21,7 +23,7 @@ def init_db():
 def insert_document(title, content, status):
     now_str = datetime.now().isoformat()
 
-    conn = sqlite3.connect("documents.db")
+    conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -39,7 +41,7 @@ def insert_document(title, content, status):
 
 
 def get_all_documents():
-    conn = sqlite3.connect("documents.db")
+    conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM documents")
     documents = cursor.fetchall()
@@ -58,36 +60,30 @@ def get_all_documents():
 
 
 def get_document_by_id(document_id):
-    conn = sqlite3.connect("documents.db")
+    conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute(
-        "SELECT * FROM documents WHERE id = ?",
-        (document_id,)
-        )
+    cursor.execute("SELECT * FROM documents WHERE id = ?", (document_id,))
 
     row = cursor.fetchone()
     conn.close()
-    
+
     if row is None:
         return None
-    
+
     dict_row = {
-            "id": row[0],
-            "title": row[1],
-            "content": row[2],
-            "created_at": row[3],
-            "status": row[4],
-        }
+        "id": row[0],
+        "title": row[1],
+        "content": row[2],
+        "created_at": row[3],
+        "status": row[4],
+    }
     return dict_row
 
 
 def delete_document(document_id):
-    conn = sqlite3.connect("documents.db")
+    conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute(
-        "DELETE FROM documents WHERE id = ?",
-        (document_id,)
-        )
+    cursor.execute("DELETE FROM documents WHERE id = ?", (document_id,))
     conn.commit()
     deleted_count = cursor.rowcount
     conn.close()
