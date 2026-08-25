@@ -7,6 +7,7 @@ from database import (
     get_all_documents,
     get_document_by_id,
     delete_document,
+    update_document,
 )
 
 app = FastAPI()
@@ -35,8 +36,8 @@ def create_document(document: DocumentCreate):
 
 
 @app.get("/documents")
-def list_documents():
-    documents = get_all_documents()
+def list_documents(status: str | None = None):
+    documents = get_all_documents(status=status)
     return documents
 
 
@@ -54,3 +55,15 @@ def delete_document_route(document_id: int):
     if not is_deleted:
         raise HTTPException(status_code=404, detail="Document not found")
     return {"message": "Document deleted"}
+
+
+@app.put("/documents/{document_id}")
+def update_document_route(document_id: int, document: DocumentCreate):
+    is_updated = update_document(document_id, document.title, document.content)
+    if not is_updated:
+        raise HTTPException(status_code=404, detail="Document not found")
+    return {
+        "id": document_id,
+        "title": f"{document.title}",
+        "content": f"{document.content}",
+    }

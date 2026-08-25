@@ -40,10 +40,13 @@ def insert_document(title, content, status):
     return new_id
 
 
-def get_all_documents():
+def get_all_documents(status=None):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM documents")
+    if status:
+        cursor.execute("SELECT * FROM documents WHERE status = ?", (status,))
+    else:
+        cursor.execute("SELECT * FROM documents")
     documents = cursor.fetchall()
     conn.close()
 
@@ -89,3 +92,21 @@ def delete_document(document_id):
     conn.close()
 
     return True if deleted_count > 0 else False
+
+
+def update_document(doc_id, title, content):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+    UPDATE documents
+    SET title = ?, content = ?
+    WHERE id = ?
+    """,
+        (title, content, doc_id),
+    )
+    conn.commit()
+    updated_count = cursor.rowcount
+    conn.close()
+
+    return True if updated_count > 0 else False

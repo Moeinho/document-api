@@ -106,3 +106,49 @@ def test_delete_then_get(client):
     response2 = client.get(f"/documents/{doc_id}")
 
     assert response2.status_code == 404
+
+
+# Update document tests
+def test_update_document(client):
+    response = client.post(
+        "/documents", json={"title": "old title", "content": "old content"}
+    )
+    doc_id = response.json()["id"]
+
+    response2 = client.put(
+        f"/documents/{doc_id}",
+        json={"title": "update title", "content": "update content"},
+    )
+    assert response2.status_code == 200
+
+    response3 = client.get(f"/documents/{doc_id}")
+    assert response3.json()["id"] == doc_id
+    assert response3.json()["title"] == "update title"
+    assert response3.json()["content"] == "update content"
+
+
+def test_update_document_not_found(client):
+    response = client.put(
+        "/documents/9999", json={"title": "update title", "content": "update content"}
+    )
+    assert response.status_code == 404
+
+
+def test_update_document_missing_field(client):
+    response = client.post(
+        "/documents", json={"title": "old title", "content": "old content"}
+    )
+    doc_id = response.json()["id"]
+
+    response2 = client.put(f"/documents/{doc_id}", json={"title": "update title"})
+    assert response2.status_code == 422
+
+
+def test_list_documents_filter_by_status(client):
+    client.post("/documents", json={"title": "t1", "content": "c1"})
+    response = client.get("/documents?status=active")
+    assert len(response.json()) > 0
+    for doc in response.json():
+        assert doc["status"] == "active"
+    response2 = client.get("/documents?status=inactive")
+    assert response2.json() == []
