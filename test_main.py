@@ -146,9 +146,12 @@ def test_update_document_missing_field(client):
 
 def test_list_documents_filter_by_status(client):
     client.post("/documents", json={"title": "t1", "content": "c1"})
+
     response = client.get("/documents?status=active")
     assert len(response.json()) > 0
+
     for doc in response.json():
         assert doc["status"] == "active"
+
     response2 = client.get("/documents?status=inactive")
     assert response2.json() == []

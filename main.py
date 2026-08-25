@@ -29,8 +29,8 @@ def get_health():
 def create_document(document: DocumentCreate):
     doc_id = insert_document(document.title, document.content, "active")
     return {
-        "title": f"{document.title}",
-        "content": f"{document.content}",
+        "title": document.title,
+        "content": document.content,
         "id": doc_id,
     }
 
@@ -64,6 +64,6 @@ def update_document_route(document_id: int, document: DocumentCreate):
         raise HTTPException(status_code=404, detail="Document not found")
     return {
         "id": document_id,
-        "title": f"{document.title}",
-        "content": f"{document.content}",
+        "title": document.title,
+        "content": document.content,
     }
